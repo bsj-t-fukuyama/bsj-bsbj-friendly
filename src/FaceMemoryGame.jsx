@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Sparkles, RotateCcw, Plus, X, Save, UserPlus } from 'lucide-react';
+import './faceMemoryGame.css';
 
 // 初期の人物データ配列（Base64画像を使用）
-const initialPeopleData = [
+var initialPeopleData = [
   {
     id: 1,
     name: '田中太郎',
@@ -10,7 +11,8 @@ const initialPeopleData = [
     position: 'フロントエンド開発者',
     goodAt: 'React.js, TypeScript',
     like: 'コーヒー、映画鑑賞',
-    image: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI1MCIgZmlsbD0iIzMzNzNkYyIvPgogIDx0ZXh0IHg9IjUwJSIgeT0iNTUlIiBmb250LXNpemU9IjQwIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPvCfkanwn4+7PC90ZXh0Pgo8L3N2Zz4='
+    image: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1zbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI1MCIgZmlsbD0iIzMzNzNkYyIvPgogIDx0ZXh0IHg9IjUwJSIgeT0iNTUlIiBmb250LXNpemU9IjQwIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPvCfkanwn4+7PC90ZXh0Pgo8L3N2Zz4=',
+    team: 'A'
   },
   {
     id: 2,
@@ -19,7 +21,8 @@ const initialPeopleData = [
     position: 'UXデザイナー',
     goodAt: 'Figma, ユーザビリティ設計',
     like: 'アート、読書',
-    image: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI1MCIgZmlsbD0iI2VjNDg5OSIvPgogIDx0ZXh0IHg9IjUwJSIgeT0iNTUlIiBmb250LXNpemU9IjQwIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPvCfkanwn46oPC90ZXh0Pgo8L3N2Zz4='
+    image: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1zbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI1MCIgZmlsbD0iI2VjNDg5OSIvPgogIDx0ZXh0IHg9IjUwJSIgeT0iNTUlIiBmb250LXNpemU9IjQwIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPvCfkanwn46oPC90ZXh0Pgo8L3N2Zz4=',
+    team: 'A'
   },
   {
     id: 3,
@@ -28,7 +31,8 @@ const initialPeopleData = [
     position: 'バックエンド開発者',
     goodAt: 'Node.js, データベース設計',
     like: 'ゲーム、プログラミング',
-    image: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI1MCIgZmlsbD0iIzEwYjk4MSIvPgogIDx0ZXh0IHg9IjUwJSIgeT0iNTUlIiBmb250LXNpemU9IjQwIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPvCfkanwn5K8PC90ZXh0Pgo8L3N2Zz4='
+    image: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1zbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI1MCIgZmlsbD0iIzEwYjk4MSIvPgogIDx0ZXh0IHg9IjUwJSIgeT0iNTUlIiBmb250LXNpemU9IjQwIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPvCfkanwn5K8PC90ZXh0Pgo8L3N2Zz4=',
+    team: 'A'
   },
   {
     id: 4,
@@ -37,7 +41,8 @@ const initialPeopleData = [
     position: 'プロダクトマネージャー',
     goodAt: 'プロジェクト管理, 戦略立案',
     like: 'ヨガ、旅行',
-    image: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI1MCIgZmlsbD0iI2Y1OWUwYiIvPgogIDx0ZXh0IHg9IjUwJSIgeT0iNTUlIiBmb250LXNpemU9IjQwIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPvCfkanwn5K8PC90ZXh0Pgo8L3N2Zz4='
+    image: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1zbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI1MCIgZmlsbD0iI2Y1OWUwYiIvPgogIDx0ZXh0IHg9IjUwJSIgeT0iNTUlIiBmb250LXNpemU9IjQwIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPvCfkanwn5K8PC90ZXh0Pgo8L3N2Zz4=',
+    team: 'B'
   },
   {
     id: 5,
@@ -46,7 +51,8 @@ const initialPeopleData = [
     position: 'データサイエンティスト',
     goodAt: 'Python, 機械学習',
     like: '数学、ランニング',
-    image: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI1MCIgZmlsbD0iIzY2NjZkZCIvPgogIDx0ZXh0IHg9IjUwJSIgeT0iNTUlIiBmb250LXNpemU9IjQwIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPvCfkanwn5SLPC90ZXh0Pgo8L3N2Zz4='
+    image: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1zbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI1MCIgZmlsbD0iIzY2NjZkZCIvPgogIDx0ZXh0IHg9IjUwJSIgeT0iNTUlIiBmb250LXNpemU9IjQwIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPvCfkanwn5SLPC90ZXh0Pgo8L3N2Zz4=',
+    team: 'B'
   },
   {
     id: 6,
@@ -55,7 +61,8 @@ const initialPeopleData = [
     position: 'マーケティング',
     goodAt: 'SNS戦略, コンテンツ作成',
     like: '写真、カフェ巡り',
-    image: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI1MCIgZmlsbD0iI2VmNDQ0NCIvPgogIDx0ZXh0IHg9IjUwJSIgeT0iNTUlIiBmb250LXNpemU9IjQwIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPvCfkanwn5K7PC90ZXh0Pgo8L3N2Zz4='
+    image: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1zbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI1MCIgZmlsbD0iI2VmNDQ0NCIvPgogIDx0ZXh0IHg9IjUwJSIgeT0iNTUlIiBmb250LXNpemU9IjQwIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPvCfkanwn5K7PC90ZXh0Pgo8L3N2Zz4=',
+    team: 'B'
   }
 ];
 
@@ -95,6 +102,7 @@ const FaceMemoryGame = () => {
   const [showCelebration, setShowCelebration] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
   const [showMemberForm, setShowMemberForm] = useState(false);
+  const [editMember, setEditMember] = useState(null); // 編集中メンバー
   const [newMember, setNewMember] = useState({
     name: '',
     age: '',
@@ -104,16 +112,24 @@ const FaceMemoryGame = () => {
     image: ''
   });
   const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedTeam, setSelectedTeam] = useState(null); // 'A' | 'B' | null
+
+  // チーム分けされたメンバー
+  const teamAMembers = peopleData.filter(p => p.team === 'A');
+  const teamBMembers = peopleData.filter(p => p.team === 'B');
+
+  // ゲーム用メンバーを選択
+  const gamePeopleData = selectedTeam === 'A' ? teamAMembers : selectedTeam === 'B' ? teamBMembers : peopleData;
 
   useEffect(() => {
     if (gameStarted) {
-      const newCards = createCards(peopleData);
+      const newCards = createCards(gamePeopleData);
       setCards(newCards);
       setFlippedCards([]);
       setMatchedPairs(0);
       setShowCelebration(false);
     }
-  }, [peopleData, gameStarted]);
+  }, [gamePeopleData, gameStarted]);
 
   const initializeGame = () => {
     const newCards = createCards(peopleData);
@@ -125,22 +141,22 @@ const FaceMemoryGame = () => {
   };
 
   const handleCardClick = (cardIndex) => {
-    if (flippedCards.length === 2) return;
-    
-    const card = cards[cardIndex];
-    if (card.isFlipped || card.isMatched) return;
-
+    if (cards[cardIndex].isMatched || cards[cardIndex].isFlipped) return;
+    // カードの表裏をトグル（表にするのみ）
     const newCards = [...cards];
     newCards[cardIndex].isFlipped = true;
     setCards(newCards);
 
-    const newFlippedCards = [...flippedCards, cardIndex];
-    setFlippedCards(newFlippedCards);
+    // 現在表になっているカードのindexを取得
+    const flippedIndexes = newCards
+      .map((c, i) => (c.isFlipped && !c.isMatched ? i : null))
+      .filter(i => i !== null);
 
-    if (newFlippedCards.length === 2) {
+    // 2枚とも表ならペア判定
+    if (flippedIndexes.length === 2) {
       setTimeout(() => {
-        checkMatch(newFlippedCards);
-      }, 1000);
+        checkMatch(flippedIndexes);
+      }, 800);
     }
   };
 
@@ -156,26 +172,20 @@ const FaceMemoryGame = () => {
       newCards[second].isMatched = true;
       setCards(newCards);
       setMatchedPairs(prev => prev + 1);
-      
-      // お祝いアニメーション
       setShowCelebration(true);
       setTimeout(() => setShowCelebration(false), 2000);
-      
-      // ゲーム終了チェック
       if (matchedPairs + 1 === peopleData.length) {
         setTimeout(() => {
           alert('🎉 おめでとうございます！全ペア見つけました！恭喜！');
         }, 2000);
       }
     } else {
-      // マッチしなかった場合
+      // マッチしなかった場合は自動で裏返す
       const newCards = [...cards];
       newCards[first].isFlipped = false;
       newCards[second].isFlipped = false;
       setCards(newCards);
     }
-
-    setFlippedCards([]);
   };
 
   const resetGame = () => {
@@ -210,8 +220,8 @@ const FaceMemoryGame = () => {
   };
 
   const handleAddMember = () => {
-    if (!newMember.name || !newMember.age || !newMember.position || !newMember.image) {
-      alert('名前、年齢、職種、画像は必須項目です');
+    if (!newMember.name || !newMember.age || !newMember.position || !newMember.image || !newMember.team) {
+      alert('名前、年齢、職種、画像、チームは必須項目です');
       return;
     }
 
@@ -244,15 +254,76 @@ const FaceMemoryGame = () => {
     }
   };
 
+  // メンバークリックで編集フォームを開く
+  const handleEditMember = (person) => {
+    setEditMember(person);
+    setNewMember({
+      name: person.name,
+      age: person.age.toString(),
+      position: person.position,
+      goodAt: person.goodAt || '',
+      like: person.like || '',
+      image: person.image || '',
+      team: person.team || ''
+    });
+    setSelectedFile(null);
+    setShowMemberForm(false);
+  };
+
+  // 編集保存
+    const handleSaveEditMember = () => {
+    if (!newMember.name || !newMember.age || !newMember.position || !(newMember.image || editMember.image) || !newMember.team) {
+        alert('名前、年齢、職種、画像、チームは必須項目です');
+        return;
+    }
+    setPeopleData(prev => prev.map(p =>
+        p.id === editMember.id
+        ? {
+            ...p,
+            ...newMember,
+            age: parseInt(newMember.age),
+            image: newMember.image || editMember.image, // 画像ファイル未選択時は既存画像を維持
+            team: newMember.team
+            }
+        : p
+    ));
+    setEditMember(null);
+    setNewMember({
+        name: '',
+        age: '',
+        position: '',
+        goodAt: '',
+        like: '',
+        image: ''
+    });
+    setSelectedFile(null);
+    if (gameStarted) {
+        setTimeout(() => {
+        initializeGame();
+        }, 500);
+    }
+    };
+
+  // メンバー削除
   const handleDeleteMember = (id) => {
     if (window.confirm('このメンバーを削除しますか？')) {
       setPeopleData(prev => prev.filter(p => p.id !== id));
+      setEditMember(null);
+      setShowMemberForm(false);
       if (gameStarted) {
         setTimeout(() => {
           initializeGame();
         }, 500);
       }
     }
+  };
+
+  // チームでゲーム開始
+  const startTeamGame = (team) => {
+    setSelectedTeam(team);
+    setTimeout(() => {
+      initializeGame();
+    }, 0);
   };
 
   if (!gameStarted) {
@@ -277,61 +348,119 @@ const FaceMemoryGame = () => {
             </button>
           </div>
 
+          {/* チーム選択ボタン */}
+          <div className="flex justify-center gap-6 mb-8">
+            <button
+              onClick={() => startTeamGame('A')}
+              className="px-8 py-4 bg-blue-500 text-white rounded-lg font-bold text-lg hover:bg-blue-600 transition-colors"
+            >
+              Aチームで開始
+            </button>
+            <button
+              onClick={() => startTeamGame('B')}
+              className="px-8 py-4 bg-pink-500 text-white rounded-lg font-bold text-lg hover:bg-pink-600 transition-colors"
+            >
+              Bチームで開始
+            </button>
+          </div>
+
           {/* メンバー一覧 */}
           <div className="bg-white rounded-lg p-6 shadow-lg">
             <h2 className="text-2xl font-bold text-gray-800 mb-4">メンバー一覧</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {peopleData.map(person => (
-                <div key={person.id} className="bg-gray-50 rounded-lg p-4 relative">
-                  <button
-                    onClick={() => handleDeleteMember(person.id)}
-                    className="absolute top-2 right-2 text-red-500 hover:text-red-700"
-                  >
-                    <X size={20} />
-                  </button>
-                  <div className="flex items-center gap-4">
-                    <img
-                      src={person.image}
-                      alt={person.name}
-                      className="w-16 h-16 rounded-full object-cover"
-                      onError={(e) => {
-                        e.target.style.display = 'none';
-                        e.target.nextSibling.style.display = 'flex';
-                      }}
-                    />
-                    <div 
-                      className="w-16 h-16 rounded-full bg-gray-300 items-center justify-center text-gray-600 hidden"
-                      style={{ display: 'none' }}
+            <div className="mb-6">
+              <h3 className="text-xl font-bold text-blue-600 mb-2">Aチーム</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {teamAMembers.map(person => (
+                  <div key={person.id} className="bg-gray-50 rounded-lg p-4 relative cursor-pointer" onClick={() => handleEditMember(person)}>
+                    <button
+                      onClick={e => { e.stopPropagation(); handleDeleteMember(person.id); }}
+                      className="absolute top-2 right-2 text-red-500 hover:text-red-700"
                     >
-                      👤
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-bold text-gray-800">{person.name}</h3>
-                      <p className="text-sm text-gray-600">{person.age}歳 • {person.position}</p>
-                      <p className="text-xs text-gray-500 mt-1">得意: {person.goodAt}</p>
-                      <p className="text-xs text-gray-500">好き: {person.like}</p>
+                      <X size={20} />
+                    </button>
+                    <div className="flex items-center gap-4">
+                      <img
+                        key={person.id + '-' + person.image}
+                        src={person.image}
+                        alt={person.name}
+                        className="w-20 h-20 rounded-full object-cover border-2 border-purple-200 shadow"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.nextSibling.style.display = 'flex';
+                        }}
+                      />
+                      <div 
+                        className="w-20 h-20 rounded-full bg-gray-300 items-center justify-center text-gray-600 hidden"
+                        style={{ display: 'none' }}
+                      >
+                        👤
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-bold text-gray-800">{person.name}</h3>
+                        <p className="text-sm text-gray-600">{person.age}歳 • {person.position}</p>
+                        <p className="text-xs text-gray-500 mt-1">得意: {person.goodAt}</p>
+                        <p className="text-xs text-gray-500">好き: {person.like}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-pink-600 mb-2">Bチーム</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {teamBMembers.map(person => (
+                  <div key={person.id} className="bg-gray-50 rounded-lg p-4 relative cursor-pointer" onClick={() => handleEditMember(person)}>
+                    <button
+                      onClick={e => { e.stopPropagation(); handleDeleteMember(person.id); }}
+                      className="absolute top-2 right-2 text-red-500 hover:text-red-700"
+                    >
+                      <X size={20} />
+                    </button>
+                    <div className="flex items-center gap-4">
+                      <img
+                        key={person.id + '-' + person.image}
+                        src={person.image}
+                        alt={person.name}
+                        className="w-20 h-20 rounded-full object-cover border-2 border-purple-200 shadow"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.nextSibling.style.display = 'flex';
+                        }}
+                      />
+                      <div 
+                        className="w-20 h-20 rounded-full bg-gray-300 items-center justify-center text-gray-600 hidden"
+                        style={{ display: 'none' }}
+                      >
+                        👤
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-bold text-gray-800">{person.name}</h3>
+                        <p className="text-sm text-gray-600">{person.age}歳 • {person.position}</p>
+                        <p className="text-xs text-gray-500 mt-1">得意: {person.goodAt}</p>
+                        <p className="text-xs text-gray-500">好き: {person.like}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
 
-        {/* メンバー追加フォーム */}
-        {showMemberForm && (
+        {/* メンバー追加フォーム or 編集フォーム */}
+        {(showMemberForm || editMember) && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-lg p-6 max-w-md w-full">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-xl font-bold text-gray-800">新しいメンバーを追加</h3>
+                <h3 className="text-xl font-bold text-gray-800">{editMember ? 'メンバーを編集' : '新しいメンバーを追加'}</h3>
                 <button
-                  onClick={() => setShowMemberForm(false)}
+                  onClick={() => { setShowMemberForm(false); setEditMember(null); }}
                   className="text-gray-500 hover:text-gray-700"
                 >
                   <X size={24} />
                 </button>
               </div>
-              
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">名前 *</label>
@@ -343,7 +472,6 @@ const FaceMemoryGame = () => {
                     placeholder="田中太郎"
                   />
                 </div>
-                
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">年齢 *</label>
                   <input
@@ -354,7 +482,6 @@ const FaceMemoryGame = () => {
                     placeholder="28"
                   />
                 </div>
-                
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">職種・ポジション *</label>
                   <input
@@ -365,7 +492,6 @@ const FaceMemoryGame = () => {
                     placeholder="フロントエンド開発者"
                   />
                 </div>
-                
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">得意なこと</label>
                   <input
@@ -376,7 +502,6 @@ const FaceMemoryGame = () => {
                     placeholder="React.js, TypeScript"
                   />
                 </div>
-                
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">好きなもの</label>
                   <input
@@ -387,7 +512,6 @@ const FaceMemoryGame = () => {
                     placeholder="コーヒー、映画鑑賞"
                   />
                 </div>
-                
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">画像ファイル *</label>
                   <input
@@ -398,12 +522,12 @@ const FaceMemoryGame = () => {
                   />
                   <p className="text-xs text-gray-500 mt-1">JPG, PNG, GIF対応（5MB以下）</p>
                 </div>
-                
-                {newMember.image && (
+                {/* 編集・追加フォームの画像プレビュー部分を修正 */}
+                {(newMember.image || (editMember && editMember.image)) && (
                   <div className="mt-2">
                     <p className="text-sm text-gray-600 mb-2">画像プレビュー:</p>
                     <img
-                      src={newMember.image}
+                      src={newMember.image ? newMember.image : (editMember && editMember.image)}
                       alt="プレビュー"
                       className="w-20 h-20 rounded-full object-cover border-2 border-gray-300"
                     />
@@ -414,22 +538,45 @@ const FaceMemoryGame = () => {
                     )}
                   </div>
                 )}
+                {/* 編集・新規登録フォームにチーム選択を追加 */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">チーム *</label>
+                  <select
+                    value={newMember.team || ''}
+                    onChange={e => setNewMember({ ...newMember, team: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    required
+                  >
+                    <option value="">選択してください</option>
+                    <option value="A">Aチーム</option>
+                    <option value="B">Bチーム</option>
+                  </select>
+                </div>
               </div>
-              
               <div className="flex gap-3 mt-6">
                 <button
-                  onClick={() => setShowMemberForm(false)}
+                  onClick={() => { setShowMemberForm(false); setEditMember(null); }}
                   className="flex-1 px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors"
                 >
                   キャンセル
                 </button>
-                <button
-                  onClick={handleAddMember}
-                  className="flex-1 px-4 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 transition-colors"
-                >
-                  <Save className="inline mr-2" size={16} />
-                  追加
-                </button>
+                {editMember ? (
+                  <button
+                    onClick={handleSaveEditMember}
+                    className="flex-1 px-4 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 transition-colors"
+                  >
+                    <Save className="inline mr-2" size={16} />
+                    保存
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleAddMember}
+                    className="flex-1 px-4 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 transition-colors"
+                  >
+                    <Save className="inline mr-2" size={16} />
+                    追加
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -468,39 +615,31 @@ const FaceMemoryGame = () => {
 
       {/* ゲームボード */}
       <div className="max-w-6xl mx-auto">
-        <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-3">
+        <div className="grid grid-cols-6 gap-8">
           {cards.map((card, index) => (
             <div
               key={card.id}
               onClick={() => handleCardClick(index)}
-              className={`aspect-square cursor-pointer transition-all duration-500 transform hover:scale-105 ${
+              className={`relative aspect-square min-w-[160px] h-48 cursor-pointer transition-all duration-500 transform hover:scale-105 ${
                 card.isMatched ? 'opacity-0 pointer-events-none' : ''
               }`}
             >
-              <div className={`w-full h-full rounded-lg shadow-lg transition-transform duration-500 ${
-                card.isFlipped ? 'rotate-y-180' : ''
-              }`}>
-                {/* カード裏面 */}
-                <div className={`absolute inset-0 backface-hidden ${
-                  card.isFlipped ? 'opacity-0' : 'opacity-100'
-                }`}>
-                  <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                    <div className="text-white text-2xl">🎴</div>
-                  </div>
+              {/* 裏面（未反転時） */}
+              {!card.isFlipped && (
+                <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                  <div className="text-white text-2xl">🎴</div>
                 </div>
-                
-                {/* カード表面 */}
-                <div className={`absolute inset-0 backface-hidden ${
-                  card.isFlipped ? 'opacity-100' : 'opacity-0'
-                }`}>
+              )}
+              {/* 表面（反転時） */}
+              {card.isFlipped && (
+                <div className="absolute inset-0 w-full h-full">
                   {card.type === 'image' ? (
-                    // 画像カード
                     <div className="w-full h-full bg-white rounded-lg flex items-center justify-center shadow-lg overflow-hidden">
                       <img
                         src={card.content}
                         alt="メンバー"
                         className="w-full h-full object-cover rounded-lg"
-                        onError={(e) => {
+                        onError={e => {
                           e.target.style.display = 'none';
                           e.target.nextSibling.style.display = 'flex';
                         }}
@@ -510,7 +649,6 @@ const FaceMemoryGame = () => {
                       </div>
                     </div>
                   ) : (
-                    // 情報カード
                     <div className="w-full h-full bg-white rounded-lg p-2 shadow-lg overflow-hidden">
                       <div className="text-xs leading-tight h-full flex flex-col justify-center">
                         <div className="font-bold text-purple-600 mb-1 text-center">{card.content.name}</div>
@@ -522,7 +660,7 @@ const FaceMemoryGame = () => {
                     </div>
                   )}
                 </div>
-              </div>
+              )}
             </div>
           ))}
         </div>
